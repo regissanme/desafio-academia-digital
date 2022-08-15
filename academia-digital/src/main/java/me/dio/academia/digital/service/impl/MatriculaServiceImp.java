@@ -3,6 +3,7 @@ package me.dio.academia.digital.service.impl;
 import me.dio.academia.digital.entity.Aluno;
 import me.dio.academia.digital.entity.Matricula;
 import me.dio.academia.digital.entity.form.MatriculaForm;
+import me.dio.academia.digital.exceptions.EntidadeNaoEncontradaException;
 import me.dio.academia.digital.repository.AlunoRepository;
 import me.dio.academia.digital.repository.MatriculaRepository;
 import me.dio.academia.digital.service.IMatriculaService;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Projeto: academia-digital
@@ -25,24 +25,32 @@ public class MatriculaServiceImp implements IMatriculaService {
     private MatriculaRepository matriculaRepository;
 
     @Autowired
+    private AlunoServiceImpl alunoService;
+
+    @Autowired
     private AlunoRepository alunoRepository;
+
+
 
     @Override
     public Matricula create(MatriculaForm form) {
-        Optional<Aluno> aluno = alunoRepository.findById(form.getAlunoId());
-        if (aluno.isPresent()) {
-            Matricula matricula = new Matricula();
-            matricula.setAluno(aluno.get());
-
-            matricula = matriculaRepository.save(matricula);
-            return matricula;
+        Aluno aluno = alunoService.get(form.getAlunoId());
+        if(!aluno.isAtivo()){
+            aluno.setAtivo(true);
+            alunoRepository.save(aluno);
         }
-        return null;
+
+        Matricula matricula = new Matricula();
+        matricula.setAluno(aluno);
+        matricula = matriculaRepository.save(matricula);
+
+        return matricula;
     }
 
     @Override
     public Matricula get(Long id) {
-        return matriculaRepository.getById(id);
+        return matriculaRepository.findById(id).orElseThrow(
+                () -> new EntidadeNaoEncontradaException("Matrícula com o id " + id + " não foi encontrada!"));
     }
 
     @Override
@@ -63,6 +71,7 @@ public class MatriculaServiceImp implements IMatriculaService {
 
     @Override
     public void delete(Long id) {
-
+        this.get(id);
+        matriculaRepository.deleteById(id);
     }
 }

@@ -4,15 +4,13 @@ import me.dio.academia.digital.entity.Aluno;
 import me.dio.academia.digital.entity.AvaliacaoFisica;
 import me.dio.academia.digital.entity.form.AvaliacaoFisicaForm;
 import me.dio.academia.digital.entity.form.AvaliacaoFisicaUpdateForm;
-import me.dio.academia.digital.repository.AlunoRepository;
+import me.dio.academia.digital.exceptions.EntidadeNaoEncontradaException;
 import me.dio.academia.digital.repository.AvaliacaoFisicaRepository;
 import me.dio.academia.digital.service.IAvaliacaoFisicaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Projeto: academia-digital
@@ -27,32 +25,31 @@ public class AvaliacaoFisicaServiceImp implements IAvaliacaoFisicaService {
     private AvaliacaoFisicaRepository avaliacaoFisicaRepository;
 
     @Autowired
-    private AlunoRepository alunoRepository;
+    private AlunoServiceImpl alunoService;
 
 
     @Override
     public AvaliacaoFisica create(AvaliacaoFisicaForm form) {
 
-        Optional<Aluno> alunoEncontrado = alunoRepository.findById(form.getAlunoId());
+        Aluno alunoEncontrado = alunoService.get(form.getAlunoId());
 
-        AvaliacaoFisica avaliacaoFisica = null;
+        AvaliacaoFisica avaliacaoFisica = new AvaliacaoFisica();
+        avaliacaoFisica.setAluno(alunoEncontrado);
+        avaliacaoFisica.setAltura(form.getAltura());
+        avaliacaoFisica.setPeso(form.getPeso());
+        avaliacaoFisica.calcularImc();
 
-        if(alunoEncontrado.isPresent()) {
-            avaliacaoFisica = new AvaliacaoFisica();
-            avaliacaoFisica.setAluno(alunoEncontrado.get());
-            avaliacaoFisica.setAltura(form.getAltura());
-            avaliacaoFisica.setPeso(form.getPeso());
-            avaliacaoFisica.calcularImc();
+        avaliacaoFisica = avaliacaoFisicaRepository.save(avaliacaoFisica);
 
-            avaliacaoFisica = avaliacaoFisicaRepository.save(avaliacaoFisica);
-        }
 
         return avaliacaoFisica;
     }
 
     @Override
     public AvaliacaoFisica get(Long id) {
-        return avaliacaoFisicaRepository.findById(id).orElse(null);
+
+        return avaliacaoFisicaRepository.findById(id).orElseThrow(
+                () -> new EntidadeNaoEncontradaException("Avaliação Física com o id " + id + " não foi encontrada!"));
     }
 
     @Override
@@ -62,11 +59,17 @@ public class AvaliacaoFisicaServiceImp implements IAvaliacaoFisicaService {
 
     @Override
     public AvaliacaoFisica update(Long id, AvaliacaoFisicaUpdateForm formUpdate) {
-        return null;
+        AvaliacaoFisica avaliacaoFisica = this.get(id);
+        avaliacaoFisica.setAltura(formUpdate.getAltura());
+        avaliacaoFisica.setPeso(formUpdate.getPeso());
+
+        avaliacaoFisica = avaliacaoFisicaRepository.save(avaliacaoFisica);
+        return avaliacaoFisica;
     }
 
     @Override
     public void delete(Long id) {
-
+        this.get(id);
+        avaliacaoFisicaRepository.deleteById(id);
     }
 }

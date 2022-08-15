@@ -2,6 +2,7 @@ package me.dio.academia.digital.controller;
 
 import me.dio.academia.digital.entity.AvaliacaoFisica;
 import me.dio.academia.digital.entity.form.AvaliacaoFisicaForm;
+import me.dio.academia.digital.entity.form.AvaliacaoFisicaUpdateForm;
 import me.dio.academia.digital.service.impl.AvaliacaoFisicaServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class AvaliacaoFisicaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AvaliacaoFisica> findById(@PathVariable Long id){
+    public ResponseEntity<AvaliacaoFisica> findById(@PathVariable Long id) {
         return ResponseEntity.ok(service.get(id));
     }
 
@@ -36,5 +37,18 @@ public class AvaliacaoFisicaController {
         URI uri = new URI("/avaliacoes/" + avaliacaoFisicaSalva.getId());
 
         return ResponseEntity.created(uri).body(avaliacaoFisicaSalva);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AvaliacaoFisica> update(
+            @Valid @RequestBody AvaliacaoFisicaUpdateForm avaliacaoFisicaUpdateForm,
+            @PathVariable Long id) {
+        return ResponseEntity.ok(service.update(id, avaliacaoFisicaUpdateForm));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

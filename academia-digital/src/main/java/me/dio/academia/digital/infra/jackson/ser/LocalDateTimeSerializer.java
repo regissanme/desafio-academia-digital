@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
  */
 public class LocalDateTimeSerializer extends StdSerializer<LocalDateTime> {
 
-	private static final long serialVersionUID = -6347158617481757931L;
+    private static final long serialVersionUID = -6347158617481757931L;
 
-	public LocalDateTimeSerializer() {
+    public LocalDateTimeSerializer() {
         super(LocalDateTime.class);
     }
 

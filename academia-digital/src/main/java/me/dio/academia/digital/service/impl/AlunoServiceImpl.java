@@ -4,6 +4,8 @@ import me.dio.academia.digital.entity.Aluno;
 import me.dio.academia.digital.entity.AvaliacaoFisica;
 import me.dio.academia.digital.entity.form.AlunoForm;
 import me.dio.academia.digital.entity.form.AlunoUpdateForm;
+import me.dio.academia.digital.exceptions.EntidadeNaoEncontradaException;
+import me.dio.academia.digital.exceptions.ErroDeNegocioException;
 import me.dio.academia.digital.infra.utils.JavaTimeUtils;
 import me.dio.academia.digital.repository.AlunoRepository;
 import me.dio.academia.digital.service.IAlunoService;
@@ -12,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Projeto: academia-digital
@@ -29,11 +30,17 @@ public class AlunoServiceImpl implements IAlunoService {
 
     @Override
     public Aluno create(AlunoForm form) {
+        Aluno cpfEmUso = alunoRepository.findByCpf(form.getCpf());
+        if (cpfEmUso != null) {
+            throw new ErroDeNegocioException("Já possui um registro cadastrado com esse CPF");
+        }
+
         Aluno aluno = new Aluno();
         aluno.setNome(form.getNome());
         aluno.setCpf(form.getCpf());
         aluno.setBairro(form.getBairro());
         aluno.setDataDeNascimento(form.getDataDeNascimento());
+        aluno.setAtivo(form.isAtivo());
 
         aluno = alunoRepository.save(aluno);
         aluno.setAvaliacoes(null);
@@ -43,12 +50,13 @@ public class AlunoServiceImpl implements IAlunoService {
 
     @Override
     public Aluno get(Long id) {
-        return alunoRepository.findById(id).orElse(null);
+        return alunoRepository.findById(id).orElseThrow(
+                () -> new EntidadeNaoEncontradaException("Aluno(o) com o id " + id + " não foi encontrado(a)!"));
     }
 
     @Override
     public List<Aluno> getAll(String dataDeNascimento) {
-        if(dataDeNascimento == null) {
+        if (dataDeNascimento == null) {
             return alunoRepository.findAll();
         }
         LocalDate localDate = LocalDate.parse(dataDeNascimento, JavaTimeUtils.LOCAL_DATE_FORMATTER);
@@ -57,22 +65,34 @@ public class AlunoServiceImpl implements IAlunoService {
 
     @Override
     public Aluno update(Long id, AlunoUpdateForm formUpdate) {
-        return null;
+        Aluno aluno = this.get(id);
+
+        aluno.setNome(formUpdate.getNome());
+        aluno.setBairro(formUpdate.getBairro());
+        aluno.setDataDeNascimento(formUpdate.getDataDeNascimento());
+        aluno.setAtivo(formUpdate.isAtivo());
+        aluno = alunoRepository.save(aluno);
+
+        return aluno;
     }
 
     @Override
     public void delete(Long id) {
+        Aluno aluno = this.get(id);
 
+        // O aluno não deve ser deletado, somente colocado como inativo
+        aluno.setAtivo(false);
+        alunoRepository.save(aluno);
     }
 
     @Override
     public List<AvaliacaoFisica> getAllAvaliacoesFisicasPorIdAluno(Long alunoId) {
-        Optional<Aluno> alunoEncontrado = alunoRepository.findById(alunoId);
-        return alunoEncontrado.map(Aluno::getAvaliacoes).orElse(null);
+        Aluno aluno = this.get(alunoId);
+        return aluno.getAvaliacoes();
     }
 
     @Override
     public List<Aluno> findByDataDeNascimento(LocalDate dataDeNascimento) {
-        return null;
+        return alunoRepository.findByDataDeNascimento(dataDeNascimento);
     }
 }

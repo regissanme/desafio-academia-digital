@@ -3,6 +3,7 @@ package me.dio.academia.digital.controller;
 import me.dio.academia.digital.entity.Aluno;
 import me.dio.academia.digital.entity.AvaliacaoFisica;
 import me.dio.academia.digital.entity.form.AlunoForm;
+import me.dio.academia.digital.entity.form.AlunoUpdateForm;
 import me.dio.academia.digital.service.impl.AlunoServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,9 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,7 +27,7 @@ public class AlunoController {
     }
 
     @GetMapping("/{alunoId}")
-    public ResponseEntity<Aluno> getById(@PathVariable Long alunoId){
+    public ResponseEntity<Aluno> getById(@PathVariable Long alunoId) {
         return ResponseEntity.ok(service.get(alunoId));
     }
 
@@ -40,8 +38,21 @@ public class AlunoController {
     }
 
     @GetMapping("/avaliacoes/{alunoId}")
-    public ResponseEntity<List<AvaliacaoFisica>> getAllAvaliacoesFisicasPorIdAluno(@PathVariable Long alunoId){
+    public ResponseEntity<List<AvaliacaoFisica>> getAllAvaliacoesFisicasPorIdAluno(@PathVariable Long alunoId) {
 
         return ResponseEntity.ok().body(service.getAllAvaliacoesFisicasPorIdAluno(alunoId));
+    }
+
+    @PutMapping("/{alunoId}")
+    public ResponseEntity<Aluno> update(
+            @Valid @RequestBody AlunoUpdateForm alunoUpdateForm,
+            @PathVariable Long alunoId) {
+        return ResponseEntity.ok(service.update(alunoId, alunoUpdateForm));
+    }
+
+    @DeleteMapping("/{alunoId}")
+    public ResponseEntity<?> delete(@PathVariable Long alunoId) {
+        service.delete(alunoId);
+        return ResponseEntity.noContent().build();
     }
 }

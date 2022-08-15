@@ -19,19 +19,25 @@ public class MatriculaController {
     private MatriculaServiceImp service;
 
     @PostMapping
-    public ResponseEntity<Matricula> create(@Valid @RequestBody MatriculaForm matriculaForm){
+    public ResponseEntity<Matricula> create(@Valid @RequestBody MatriculaForm matriculaForm) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(matriculaForm));
     }
 
     @GetMapping
     public ResponseEntity<List<Matricula>> getAll(
             @RequestParam(value = "bairro", required = false) String bairro
-    ){
+    ) {
         return ResponseEntity.ok(service.getAll(bairro));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Matricula> getById(@PathVariable Long id){
+    public ResponseEntity<Matricula> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.get(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

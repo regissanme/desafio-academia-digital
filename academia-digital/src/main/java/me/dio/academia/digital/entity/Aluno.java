@@ -2,14 +2,12 @@ package me.dio.academia.digital.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Data
 @Entity
@@ -17,21 +15,24 @@ import java.util.Objects;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Aluno {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  private String nome;
+    private String nome;
 
-  @Column(unique = true)
-  private String cpf;
+    @Column(unique = true)
+    private String cpf;
 
-  private String bairro;
+    private String bairro;
 
-  private LocalDate dataDeNascimento;
+    private LocalDate dataDeNascimento;
 
-  @OneToMany(mappedBy = "aluno", fetch = FetchType.LAZY)
-  @JsonIgnore
-  private List<AvaliacaoFisica> avaliacoes = new ArrayList<>();
+    @Column(columnDefinition = "boolean default true")
+    private boolean ativo;
+
+    @OneToMany(mappedBy = "aluno", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<AvaliacaoFisica> avaliacoes = new ArrayList<>();
 
 }

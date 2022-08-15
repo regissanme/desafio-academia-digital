@@ -11,10 +11,10 @@ import java.util.List;
 public interface MatriculaRepository extends JpaRepository<Matricula, Long> {
 
     // Query nativa == Mesma forma do SGBD
-     @Query(value = "SELECT * FROM tb_matriculas m "
-             + "INNER JOIN tb_alunos a ON m.aluno_id = a.id "
-             + "WHERE a.bairro = :bairro", nativeQuery = true )
-     List<Matricula> findAlunosMatriculadosPorBairroSGBD(String bairro);
+    @Query(value = "SELECT * FROM tb_matriculas m "
+            + "INNER JOIN tb_alunos a ON m.aluno_id = a.id "
+            + "WHERE a.bairro = :bairro", nativeQuery = true)
+    List<Matricula> findAlunosMatriculadosPorBairroSGBD(String bairro);
 
     // HQL
     @Query("FROM Matricula m WHERE  m.aluno.bairro = :bairro ")

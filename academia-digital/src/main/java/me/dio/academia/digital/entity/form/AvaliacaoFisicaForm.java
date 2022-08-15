@@ -3,7 +3,6 @@ package me.dio.academia.digital.entity.form;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import me.dio.academia.digital.entity.Aluno;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
