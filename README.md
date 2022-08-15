@@ -77,7 +77,8 @@ Realizar operações em cascata só faz sentido em relacionamentos Pai - Filho.
 <strong>mappedBy</strong>
 Indica qual é o lado inverso ou não dominante da relação.
 
-<h2>🔗 Links Úteis</h2>
+<h2>🔗 Links Úteis</h2>  
+
 - [Spring Boot Initialzr](https://start.spring.io/)
 - [Spring guides](https://spring.io/guides)
 - [Spring projects](https://spring.io/projects)
