@@ -1,9 +1,11 @@
 package me.dio.academia.digital.service;
 
 import me.dio.academia.digital.entity.Aluno;
+import me.dio.academia.digital.entity.AvaliacaoFisica;
 import me.dio.academia.digital.entity.form.AlunoForm;
 import me.dio.academia.digital.entity.form.AlunoUpdateForm;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface IAlunoService {
@@ -25,7 +27,7 @@ public interface IAlunoService {
    * Retorna todos os Alunos que estão no banco de dados.
    * @return - Uma lista os Alunos que estão salvas no DB.
    */
-  List<Aluno> getAll();
+  List<Aluno> getAll(String dataNascimento);
 
   /**
    * Atualiza o Aluno.
@@ -41,4 +43,9 @@ public interface IAlunoService {
    * @param id - id do Aluno que será removido.
    */
   void delete(Long id);
+
+    List<AvaliacaoFisica> getAllAvaliacoesFisicasPorIdAluno(Long alunoId);
+
+
+    List<Aluno> findByDataDeNascimento(LocalDate dataDeNascimento);
 }

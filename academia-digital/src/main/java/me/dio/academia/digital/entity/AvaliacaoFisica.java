@@ -1,6 +1,7 @@
 package me.dio.academia.digital.entity;
 
 import lombok.*;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -27,6 +28,8 @@ public class AvaliacaoFisica {
   @Column(name = "altura_atual")
   private double altura;
 
+  private double imc = 0;
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -40,14 +43,12 @@ public class AvaliacaoFisica {
     return Objects.hash(id);
   }
 
-  @Override
-  public String toString() {
-    return "AvaliacaoFisica{" +
-            "id=" + id +
-            ", aluno=" + aluno +
-            ", dataDaAvaliacao=" + dataDaAvaliacao +
-            ", peso=" + peso +
-            ", altura=" + altura +
-            '}';
+  public Double calcularImc(){
+    if(this.peso > 0 && this.altura > 1.4){
+      this.imc = (this.peso / (this.altura * this.altura));
+    }
+    return imc;
   }
+
+
 }
